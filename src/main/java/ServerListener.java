@@ -52,6 +52,7 @@ public class ServerListener implements Runnable{
                 pcSocket.close();
                 throw new Exception("nonce no match");
             }
+            info.open = true;
             while (true) {
                 Socket outSocket = outServerSocket.accept();
                 BidirectionalSocketPipe bsp = new BidirectionalSocketPipe(pcSocket, outSocket, info);
@@ -60,6 +61,7 @@ public class ServerListener implements Runnable{
         } catch (Exception ignored) {
             //do nothing, close sockets in finally
         } finally {
+            info.open = false;
             //close out socket
             if (outServerSocket != null) {
                 try {
