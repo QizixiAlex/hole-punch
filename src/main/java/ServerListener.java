@@ -44,7 +44,7 @@ public class ServerListener implements Runnable{
             info.pcPortNum = pcServerSocket.getLocalPort();
             //handshake with pc
             String nonce = generateNonce();
-            controlWriter.write(String.format("CONNECT %d %S", pcServerSocket.getLocalPort(), nonce));
+            controlWriter.println(String.format("CONNECT %d %S", pcServerSocket.getLocalPort(), nonce));
             TimeLimiter limiter = SimpleTimeLimiter.create(executor);
             final ServerSocket finalPcServerSocket = pcServerSocket;
             Socket pcSocket = limiter.callWithTimeout(new Callable<Socket>() {
@@ -56,7 +56,7 @@ public class ServerListener implements Runnable{
             //check nonce
             BufferedReader pcReader = new BufferedReader(new InputStreamReader(pcSocket.getInputStream()));
             String pcNonce = pcReader.readLine();
-            if (!pcNonce.equals(nonce)) {
+            if (!nonce.equals(pcNonce)) {
                 //close pcSocket
                 pcSocket.close();
                 throw new Exception("nonce no match");

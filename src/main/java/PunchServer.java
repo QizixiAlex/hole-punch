@@ -28,6 +28,9 @@ public class PunchServer {
                 //read pc request
                 BufferedReader controlReader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
                 String pcRequest = controlReader.readLine();
+                if (pcRequest == null || pcRequest.length() == 0) {
+                    continue;
+                }
                 String[] tokens = pcRequest.split("\\s+");
                 String requestType = tokens[0];
                 //two types of request
@@ -45,7 +48,7 @@ public class PunchServer {
                     }
                     //authenticated
                     PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
-                    controlWriter.write(String.format("CONNECTED %d", listenPort));
+                    controlWriter.println(String.format("CONNECTED %d", listenPort));
                     //setup connection info
                     ConnectionInfo currentConnectionInfo = new ConnectionInfo(userName, listenPort);
                     connectionInfoList.add(currentConnectionInfo);

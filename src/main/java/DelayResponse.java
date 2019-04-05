@@ -18,8 +18,8 @@ public class DelayResponse implements Runnable {
             Thread.sleep(delaySecs*1000);
         } catch (InterruptedException ignored) {}
         try {
-            PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream());
-            controlWriter.write("FAIL");
+            PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
+            controlWriter.println("FAIL");
         } catch (IOException ignored) {}
     }
 }

@@ -30,7 +30,7 @@ public class PunchClient {
             controlSocket = new Socket(serverHost, serverPort);
             // open command
             PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
-            controlWriter.write(String.format("OPEN %s %s %d", userName, password, remotePort));
+            controlWriter.println(String.format("OPEN %s %s %d", userName, password, remotePort));
             BufferedReader controlReader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
             String psMessage;
             while ((psMessage = controlReader.readLine())!=null) {
@@ -46,7 +46,7 @@ public class PunchClient {
                     String nonce = psMessage.split("\\s+")[2];
                     Socket psSocket = new Socket(serverHost, psThreadPort);
                     PrintWriter psWriter = new PrintWriter(psSocket.getOutputStream(), true);
-                    psWriter.write(nonce);
+                    psWriter.println(nonce);
                     //connect sockets
                     ServerSocket localListener = new ServerSocket(localPort);
                     Socket localSocket = localListener.accept();
