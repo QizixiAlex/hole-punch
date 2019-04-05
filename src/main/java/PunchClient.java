@@ -1,3 +1,9 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 public class PunchClient {
 
     private int localPort;
@@ -17,6 +23,36 @@ public class PunchClient {
     }
 
     public void start() {
+        Socket controlSocket = null;
+        try {
+            //connect to ps
+            controlSocket = new Socket(serverHost, serverPort);
+            // open command
+            PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
+            controlWriter.write(String.format("OPEN %s %s %d", userName, password, remotePort));
+            BufferedReader controlReader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
+            String psMessage;
+            while ((psMessage = controlReader.readLine())!=null) {
+                if (psMessage.startsWith("FAIL")) {
+                    // connection failed
+                    controlSocket.close();
+                    return;
+                } else if (psMessage.startsWith("CONNECTED")) {
+                    continue;
+                } else if (psMessage.startsWith("CONNECT")) {
+                    //connect with ps listening thread
+                    int psThreadPort = Integer.parseInt(psMessage.split("\\s+")[1]);
+                    String nonce = psMessage.split("\\s+")[2];
+                    Socket psSocket = new Socket(serverHost, psThreadPort);
+                    PrintWriter psWriter = new PrintWriter(psSocket.getOutputStream(), true);
+                    psWriter.write(nonce);
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

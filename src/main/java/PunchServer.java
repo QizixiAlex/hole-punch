@@ -44,7 +44,7 @@ public class PunchServer {
                         return;
                     }
                     //authenticated
-                    PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream());
+                    PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
                     controlWriter.write(String.format("CONNECTED %d", listenPort));
                     //setup connection info
                     ConnectionInfo currentConnectionInfo = new ConnectionInfo(userName, listenPort);
