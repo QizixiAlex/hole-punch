@@ -45,17 +45,6 @@ public class UnidirectionalSocketPipe implements Runnable {
             }
         } catch (Exception ignored){
             //ignore
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignored) {}
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException ignored) {}
-            }
         }
     }
 }

@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class PunchClient {
@@ -46,14 +47,16 @@ public class PunchClient {
                     Socket psSocket = new Socket(serverHost, psThreadPort);
                     PrintWriter psWriter = new PrintWriter(psSocket.getOutputStream(), true);
                     psWriter.write(nonce);
-
+                    //connect sockets
+                    ServerSocket localListener = new ServerSocket(localPort);
+                    Socket localSocket = localListener.accept();
+                    BidirSocketPipe bdsp = new BidirSocketPipe(psSocket, localSocket);
+                    bdsp.run();
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public static void main(String[] args) {

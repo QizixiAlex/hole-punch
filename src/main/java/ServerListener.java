@@ -9,6 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ServerListener implements Runnable{
@@ -17,6 +20,7 @@ public class ServerListener implements Runnable{
     private int listenPort;
     private ConnectionInfo info;
     private PrintWriter controlWriter;
+    private static final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     private String generateNonce() {
         byte[] array = new byte[NONCE_LENGTH];
@@ -41,9 +45,14 @@ public class ServerListener implements Runnable{
             //handshake with pc
             String nonce = generateNonce();
             controlWriter.write(String.format("CONNECT %d %S", pcServerSocket.getLocalPort(), nonce));
-            TimeLimiter limiter = new SimpleTimeLimiter();
+            TimeLimiter limiter = SimpleTimeLimiter.create(executor);
             final ServerSocket finalPcServerSocket = pcServerSocket;
-            Socket pcSocket = limiter.callWithTimeout(finalPcServerSocket::accept, 10, TimeUnit.SECONDS);
+            Socket pcSocket = limiter.callWithTimeout(new Callable<Socket>() {
+                @Override
+                public Socket call() throws Exception {
+                    return finalPcServerSocket.accept();
+                }
+            }, 10, TimeUnit.SECONDS);
             //check nonce
             BufferedReader pcReader = new BufferedReader(new InputStreamReader(pcSocket.getInputStream()));
             String pcNonce = pcReader.readLine();
