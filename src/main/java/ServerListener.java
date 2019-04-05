@@ -53,10 +53,13 @@ public class ServerListener implements Runnable{
                 throw new Exception("nonce no match");
             }
             info.open = true;
+            info.clientIP = pcSocket.getRemoteSocketAddress().toString();
             while (true) {
                 Socket outSocket = outServerSocket.accept();
-                BidirectionalSocketPipe bsp = new BidirectionalSocketPipe(pcSocket, outSocket, info);
-                bsp.run();
+                UnidirectionalSocketPipe leftPipe = new UnidirectionalSocketPipe(outSocket, pcSocket, info, "OUT");
+                leftPipe.run();
+                UnidirectionalSocketPipe rightPipe = new UnidirectionalSocketPipe(outSocket, pcSocket, info, "IN");
+                rightPipe.run();
             }
         } catch (Exception ignored) {
             //do nothing, close sockets in finally
