@@ -23,6 +23,7 @@ public class PunchServer {
         Authenticator authenticator = new Authenticator("");
         try {
             ServerSocket serverSocket = new ServerSocket(portNum);
+            System.out.println(String.format("Punch Server Listening on port: %d", portNum));
             while (true) {
                 Socket controlSocket = serverSocket.accept();
                 //read pc request

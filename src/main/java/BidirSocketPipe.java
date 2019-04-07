@@ -31,6 +31,7 @@ public class BidirSocketPipe implements Runnable{
                     //connection closed
                     throw new Exception();
                 } else {
+                    System.out.println(String.format("left traffic: %d", leftBytes));
                     fromOut.write(leftBuf, 0, leftBytes);
                 }
                 int rightBytes = fromIn.read(rightBuf);
@@ -38,6 +39,7 @@ public class BidirSocketPipe implements Runnable{
                     //connection closed
                     throw new Exception();
                 } else {
+                    System.out.println(String.format("right traffic: %d", rightBytes));
                     toOut.write(rightBuf, 0, rightBytes);
                 }
             }

@@ -16,16 +16,17 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerListener implements Runnable{
 
-    private static final int NONCE_LENGTH = 256;
+    private static final int NONCE_LENGTH = 64;
     private int listenPort;
     private ConnectionInfo info;
     private PrintWriter controlWriter;
     private static final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     private String generateNonce() {
-        byte[] array = new byte[NONCE_LENGTH];
-        new Random().nextBytes(array);
-        return new String(array, Charset.forName("UTF-8"));
+//        byte[] array = new byte[NONCE_LENGTH];
+//        new Random().nextBytes(array);
+//        return new String(array, Charset.forName("UTF-8"));
+        return "nonce";
     }
 
     public ServerListener(int listenPort, ConnectionInfo info, PrintWriter controlWriter) {
@@ -44,7 +45,7 @@ public class ServerListener implements Runnable{
             info.pcPortNum = pcServerSocket.getLocalPort();
             //handshake with pc
             String nonce = generateNonce();
-            controlWriter.println(String.format("CONNECT %d %S", pcServerSocket.getLocalPort(), nonce));
+            controlWriter.println(String.format("CONNECT %d %s", pcServerSocket.getLocalPort(), nonce));
             TimeLimiter limiter = SimpleTimeLimiter.create(executor);
             final ServerSocket finalPcServerSocket = pcServerSocket;
             Socket pcSocket = limiter.callWithTimeout(new Callable<Socket>() {
@@ -58,6 +59,9 @@ public class ServerListener implements Runnable{
             String pcNonce = pcReader.readLine();
             if (!nonce.equals(pcNonce)) {
                 //close pcSocket
+                System.out.println("nonce no match");
+                System.out.println(nonce);
+                System.out.println(pcNonce);
                 pcSocket.close();
                 throw new Exception("nonce no match");
             }
@@ -65,10 +69,16 @@ public class ServerListener implements Runnable{
             info.clientIP = pcSocket.getRemoteSocketAddress().toString();
             while (true) {
                 Socket outSocket = outServerSocket.accept();
+                System.out.println("out connection received");
                 UnidirectionalSocketPipe leftPipe = new UnidirectionalSocketPipe(outSocket, pcSocket, info, "OUT");
-                leftPipe.run();
+                //leftPipe.run();
+                Thread leftThread = new Thread(leftPipe);
+                leftThread.start();
                 UnidirectionalSocketPipe rightPipe = new UnidirectionalSocketPipe(outSocket, pcSocket, info, "IN");
-                rightPipe.run();
+                //rightPipe.run();
+                Thread rightThread = new Thread(rightPipe);
+                rightThread.start();
+                System.out.println("ps pipe running");
             }
         } catch (Exception ignored) {
             //do nothing, close sockets in finally

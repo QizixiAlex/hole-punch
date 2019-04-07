@@ -35,14 +35,27 @@ public class UnidirectionalSocketPipe implements Runnable {
         byte[] buf = new byte[BUF_SIZE];
         int bytesCount = 0;
         try {
-            while ((bytesCount = in.read(buf)) != -1) {
-                out.write(buf, 0, bytesCount);
-                if (direction.equals("OUT")) {
-                    info.outTraffic += bytesCount;
-                } else {
-                    info.inTraffic += bytesCount;
-                }
-            }
+//            while ((bytesCount = in.read(buf)) != -1) {
+//                out.write(buf, 0, bytesCount);
+//                if (direction.equals("OUT")) {
+//                    info.outTraffic += bytesCount;
+//                } else {
+//                    info.inTraffic += bytesCount;
+//                }
+//            }
+              while (true) {
+                  while (in.available() != 0) {
+                      bytesCount = in.read(buf);
+                      System.out.println(bytesCount);
+                      out.write(buf, 0, bytesCount);
+                      out.flush();
+                      if (direction.equals("OUT")) {
+                          info.outTraffic += bytesCount;
+                      } else {
+                          info.inTraffic += bytesCount;
+                      }
+                  }
+              }
         } catch (Exception ignored){
             //ignore
         }

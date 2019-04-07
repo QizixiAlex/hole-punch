@@ -24,14 +24,15 @@ public class UserUtils {
             PBEKeySpec spec = new PBEKeySpec( password, salt, iterations, keyLength );
             SecretKey key = skf.generateSecret( spec );
             return new String(key.getEncoded(), Charset.forName("UTF-8"));
-        } catch ( NoSuchAlgorithmException | InvalidKeySpecException e ) {
+        } catch ( Exception e ) {
             throw new RuntimeException( e );
         }
     }
 
     public List<UserInfo> readExistingUsers() {
-        List<UserInfo> results = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(userFileName))) {
+        List<UserInfo> results = new ArrayList<UserInfo>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(userFileName));
             String line;
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split("\\s+");

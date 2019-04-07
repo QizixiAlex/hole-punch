@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.TransferQueue;
 
 public class PunchClient {
 
@@ -36,22 +37,30 @@ public class PunchClient {
             while ((psMessage = controlReader.readLine())!=null) {
                 if (psMessage.startsWith("FAIL")) {
                     // connection failed
+                    System.out.println("authentication failed");
                     controlSocket.close();
                     return;
                 } else if (psMessage.startsWith("CONNECTED")) {
+                    System.out.println("connected with punch server");
                     continue;
                 } else if (psMessage.startsWith("CONNECT")) {
                     //connect with ps listening thread
+                    System.out.println("connect received");
                     int psThreadPort = Integer.parseInt(psMessage.split("\\s+")[1]);
                     String nonce = psMessage.split("\\s+")[2];
                     Socket psSocket = new Socket(serverHost, psThreadPort);
                     PrintWriter psWriter = new PrintWriter(psSocket.getOutputStream(), true);
                     psWriter.println(nonce);
                     //connect sockets
-                    ServerSocket localListener = new ServerSocket(localPort);
-                    Socket localSocket = localListener.accept();
-                    BidirSocketPipe bdsp = new BidirSocketPipe(psSocket, localSocket);
-                    bdsp.run();
+                    Socket localSocket = new Socket("localhost",localPort);
+//                    BidirSocketPipe bdsp = new BidirSocketPipe(psSocket, localSocket);
+//                    Thread thread = new Thread(bdsp);
+//                    thread.start();
+                    Thread t1 = new Thread(new UnidirPipe(localSocket, psSocket));
+                    Thread t2 = new Thread(new UnidirPipe(psSocket, localSocket));
+                    t1.start();
+                    t2.start();
+                    System.out.println("pipe built");
                 }
             }
         } catch (IOException e) {
