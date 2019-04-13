@@ -10,7 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserUtils {
+public class SecurityUtils {
 
     private final static int keyLength = 128;
     private final static int iterations = 65536;

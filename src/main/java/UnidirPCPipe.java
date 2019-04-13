@@ -2,13 +2,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class UnidirPipe implements Runnable {
+public class UnidirPCPipe implements Runnable {
 
     private Socket fromSocket;
     private Socket toSocket;
     private final static int BUF_SIZE = 512;
 
-    public UnidirPipe(Socket fromSocket, Socket toSocket) {
+    public UnidirPCPipe(Socket fromSocket, Socket toSocket) {
         this.fromSocket = fromSocket;
         this.toSocket = toSocket;
     }

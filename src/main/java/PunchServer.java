@@ -14,7 +14,7 @@ public class PunchServer {
 
     PunchServer(int portNum) {
         this.portNum = portNum;
-        connectionInfoList = new ArrayList<ConnectionInfo>();
+        connectionInfoList = new ArrayList<>();
     }
 
     public void run() {
@@ -42,10 +42,9 @@ public class PunchServer {
                     int  listenPort = Integer.parseInt(tokens[3]);
                     if (!authenticator.authenticate(userName, password, listenPort)) {
                         //authentication failure, send delayed response to pc
-                        DelayResponse delayResponse = new DelayResponse(controlSocket, 30);
-                        delayResponse.run();
-                        controlSocket.close();
-                        return;
+                        Thread delayResponseThread = new Thread(new DelayResponse(controlSocket, 30));
+                        delayResponseThread.start();
+                        continue;
                     }
                     //authenticated
                     PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);

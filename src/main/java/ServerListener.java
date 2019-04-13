@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,10 +21,14 @@ public class ServerListener implements Runnable{
     private static final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     private String generateNonce() {
-//        byte[] array = new byte[NONCE_LENGTH];
-//        new Random().nextBytes(array);
-//        return new String(array, Charset.forName("UTF-8"));
-        return "nonce";
+        String nonceCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder nonceBuilder = new StringBuilder();
+        Random rand = new Random();
+        for (int i=0 ; i< NONCE_LENGTH ; i++) {
+            int idx = (int)rand.nextFloat()*nonceCharset.length();
+            nonceBuilder.append(nonceCharset.charAt(idx));
+        }
+        return nonceBuilder.toString();
     }
 
     public ServerListener(int listenPort, ConnectionInfo info, PrintWriter controlWriter) {
@@ -48,12 +50,7 @@ public class ServerListener implements Runnable{
             controlWriter.println(String.format("CONNECT %d %s", pcServerSocket.getLocalPort(), nonce));
             TimeLimiter limiter = SimpleTimeLimiter.create(executor);
             final ServerSocket finalPcServerSocket = pcServerSocket;
-            Socket pcSocket = limiter.callWithTimeout(new Callable<Socket>() {
-                @Override
-                public Socket call() throws Exception {
-                    return finalPcServerSocket.accept();
-                }
-            }, 10, TimeUnit.SECONDS);
+            Socket pcSocket = limiter.callWithTimeout(finalPcServerSocket::accept, 10, TimeUnit.SECONDS);
             //check nonce
             BufferedReader pcReader = new BufferedReader(new InputStreamReader(pcSocket.getInputStream()));
             String pcNonce = pcReader.readLine();
@@ -70,11 +67,11 @@ public class ServerListener implements Runnable{
             while (true) {
                 Socket outSocket = outServerSocket.accept();
                 System.out.println("out connection received");
-                UnidirectionalSocketPipe leftPipe = new UnidirectionalSocketPipe(outSocket, pcSocket, info, "OUT");
+                UnidirPSPipe leftPipe = new UnidirPSPipe(outSocket, pcSocket, info, "OUT");
                 //leftPipe.run();
                 Thread leftThread = new Thread(leftPipe);
                 leftThread.start();
-                UnidirectionalSocketPipe rightPipe = new UnidirectionalSocketPipe(outSocket, pcSocket, info, "IN");
+                UnidirPSPipe rightPipe = new UnidirPSPipe(outSocket, pcSocket, info, "IN");
                 //rightPipe.run();
                 Thread rightThread = new Thread(rightPipe);
                 rightThread.start();

@@ -2,9 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.TransferQueue;
 
 public class PunchClient {
 
@@ -53,11 +51,8 @@ public class PunchClient {
                     psWriter.println(nonce);
                     //connect sockets
                     Socket localSocket = new Socket("localhost",localPort);
-//                    BidirSocketPipe bdsp = new BidirSocketPipe(psSocket, localSocket);
-//                    Thread thread = new Thread(bdsp);
-//                    thread.start();
-                    Thread t1 = new Thread(new UnidirPipe(localSocket, psSocket));
-                    Thread t2 = new Thread(new UnidirPipe(psSocket, localSocket));
+                    Thread t1 = new Thread(new UnidirPCPipe(localSocket, psSocket));
+                    Thread t2 = new Thread(new UnidirPCPipe(psSocket, localSocket));
                     t1.start();
                     t2.start();
                     System.out.println("pipe built");
@@ -65,6 +60,10 @@ public class PunchClient {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                controlSocket.close();
+            } catch (Exception ignored) {}
         }
     }
 

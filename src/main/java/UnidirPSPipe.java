@@ -3,7 +3,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class UnidirectionalSocketPipe implements Runnable {
+public class UnidirPSPipe implements Runnable {
 
     private Socket outSocket;
     private Socket pcSocket;
@@ -12,7 +12,7 @@ public class UnidirectionalSocketPipe implements Runnable {
 
     private static final int BUF_SIZE = 512;
 
-    public UnidirectionalSocketPipe(Socket outSocket, Socket pcSocket, ConnectionInfo info, String direction) {
+    public UnidirPSPipe(Socket outSocket, Socket pcSocket, ConnectionInfo info, String direction) {
         this.outSocket = outSocket;
         this.pcSocket = pcSocket;
         this.info = info;
@@ -35,14 +35,6 @@ public class UnidirectionalSocketPipe implements Runnable {
         byte[] buf = new byte[BUF_SIZE];
         int bytesCount = 0;
         try {
-//            while ((bytesCount = in.read(buf)) != -1) {
-//                out.write(buf, 0, bytesCount);
-//                if (direction.equals("OUT")) {
-//                    info.outTraffic += bytesCount;
-//                } else {
-//                    info.inTraffic += bytesCount;
-//                }
-//            }
               while (true) {
                   while (in.available() != 0) {
                       bytesCount = in.read(buf);
