@@ -7,34 +7,23 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ServerListener implements Runnable{
 
-    private static final int NONCE_LENGTH = 64;
     private int listenPort;
     private ConnectionInfo info;
+    private SecurityUtils security;
     private PrintWriter controlWriter;
     private static final ExecutorService executor = Executors.newFixedThreadPool(4);
-
-    private String generateNonce() {
-        String nonceCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        StringBuilder nonceBuilder = new StringBuilder();
-        Random rand = new Random();
-        for (int i=0 ; i< NONCE_LENGTH ; i++) {
-            int idx = (int)(rand.nextFloat()*nonceCharset.length());
-            nonceBuilder.append(nonceCharset.charAt(idx));
-        }
-        return nonceBuilder.toString();
-    }
 
     public ServerListener(int listenPort, ConnectionInfo info, PrintWriter controlWriter) {
         this.listenPort = listenPort;
         this.info = info;
         this.controlWriter = controlWriter;
+        this.security = new SecurityUtils();
     }
 
     @Override
@@ -46,7 +35,7 @@ public class ServerListener implements Runnable{
             pcServerSocket = new ServerSocket(0);
             info.pcPortNum = pcServerSocket.getLocalPort();
             //handshake with pc
-            String nonce = generateNonce();
+            String nonce = security.generateSalt();
             controlWriter.println(String.format("CONNECT %d %s", pcServerSocket.getLocalPort(), nonce));
             TimeLimiter limiter = SimpleTimeLimiter.create(executor);
             final ServerSocket finalPcServerSocket = pcServerSocket;
@@ -70,10 +59,12 @@ public class ServerListener implements Runnable{
                 UnidirPSPipe leftPipe = new UnidirPSPipe(outSocket, pcSocket, info, "OUT");
                 //leftPipe.run();
                 Thread leftThread = new Thread(leftPipe);
+                leftThread.setDaemon(true);
                 leftThread.start();
                 UnidirPSPipe rightPipe = new UnidirPSPipe(outSocket, pcSocket, info, "IN");
                 //rightPipe.run();
                 Thread rightThread = new Thread(rightPipe);
+                rightThread.setDaemon(true);
                 rightThread.start();
                 System.out.println("ps pipe running");
             }

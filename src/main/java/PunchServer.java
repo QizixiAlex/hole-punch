@@ -52,7 +52,9 @@ public class PunchServer {
                     ConnectionInfo currentConnectionInfo = new ConnectionInfo(userName, listenPort);
                     connectionInfoList.add(currentConnectionInfo);
                     ServerListener listener = new ServerListener(listenPort, currentConnectionInfo, controlWriter);
-                    listener.run();
+                    Thread listenerThread = new Thread(listener);
+                    listenerThread.setDaemon(true);
+                    listenerThread.start();
                 } else if (requestType.equals("LIST")){
                     for (ConnectionInfo info : connectionInfoList) {
                         if (info.open) {

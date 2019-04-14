@@ -17,7 +17,7 @@ public class ConnectionInfo {
     }
 
     public void display() {
-        System.out.println(String.format("%s %d %d %s %d %d",
+        System.out.println(String.format("%s %d %d %s IN:%d Bytes OUT:%d Bytes",
                 userName, outPortNum, pcPortNum, clientIP, inTraffic, outTraffic));
     }
 }

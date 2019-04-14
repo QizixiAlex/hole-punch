@@ -39,7 +39,7 @@ public class PunchConfig {
         PunchConfig pc = new PunchConfig();
         try {
             while (!pc.addConfig()) {
-                //do it again
+                //if input username and password is invalid, prompt again
             }
         } catch (IOException e) {
             e.printStackTrace();

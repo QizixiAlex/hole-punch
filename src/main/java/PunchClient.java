@@ -40,7 +40,6 @@ public class PunchClient {
                     return;
                 } else if (psMessage.startsWith("CONNECTED")) {
                     System.out.println("connected with punch server");
-                    continue;
                 } else if (psMessage.startsWith("CONNECT")) {
                     //connect with ps listening thread
                     System.out.println("connect received");
@@ -53,6 +52,8 @@ public class PunchClient {
                     Socket localSocket = new Socket("localhost",localPort);
                     Thread t1 = new Thread(new UnidirPCPipe(localSocket, psSocket));
                     Thread t2 = new Thread(new UnidirPCPipe(psSocket, localSocket));
+                    t1.setDaemon(true);
+                    t2.setDaemon(true);
                     t1.start();
                     t2.start();
                     System.out.println("pipe built");

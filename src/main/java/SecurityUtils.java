@@ -1,21 +1,22 @@
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class SecurityUtils {
 
-    private MessageDigest md5;
+    private MessageDigest sha256;
     public static final int PASSWORD_LENGTH = 32;
     public static final int SALT_LENGTH = 16;
 
     public SecurityUtils() {
         try {
-            this.md5 = MessageDigest.getInstance("MD5");
+            this.sha256 = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException ignored) {}
     }
 
-    private String generateSalt() {
+    public String generateSalt() {
         StringBuilder saltBuilder = new StringBuilder();
         String saltCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         Random rand = new Random();
@@ -31,7 +32,7 @@ public class SecurityUtils {
             salt = generateSalt();
         }
         password = password + salt;
-        byte[] messageDigest = md5.digest(password.getBytes());
+        byte[] messageDigest = sha256.digest(password.getBytes(StandardCharsets.UTF_8));
         BigInteger bi = new BigInteger(1, messageDigest);
         String passwordHash = bi.toString(16);
         passwordHash = passwordHash.replaceAll("\\s+", "");
