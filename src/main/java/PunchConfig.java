@@ -1,32 +1,46 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class PunchConfig {
 
-    private static final String userFileName = "users";
+    private static final String userFileName = System.getenv("HOME") + "/.hole_punch/users";
+    private SecurityUtils security;
 
-    public void writeToFile(String inputStr) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(userFileName));
-        writer.write(inputStr);
-        writer.close();
+    public PunchConfig() {
+        this.security = new SecurityUtils();
     }
 
-    public void addConfig() {
+    public boolean addConfig() throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter username:");
         String userName = scanner.nextLine();
         System.out.println("Enter port number:");
-        int portNum = scanner.nextInt();
+        int portNum = Integer.parseInt(scanner.nextLine());
         System.out.println("Enter password:");
         String password = scanner.nextLine();
+        if (userName.length() == 0 || password.length() == 0) {
+            System.out.println("invalid input");
+            return false;
+        }
+        String[] hashResult = security.hashPassword(password, null);
+        PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(userFileName, true)));
+        writer.println(userName);
+        writer.println(portNum);
+        writer.println(hashResult[0]);
+        writer.println(hashResult[1]);
+        writer.close();
+        return true;
     }
 
     public static void main(String[] args) {
         PunchConfig pc = new PunchConfig();
         try {
-            pc.writeToFile("Hi");
+            while (!pc.addConfig()) {
+                //do it again
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

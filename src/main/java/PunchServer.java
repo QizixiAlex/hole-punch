@@ -19,8 +19,7 @@ public class PunchServer {
 
     public void run() {
         //create socket to listen for client requests
-        //todo: set authenticator file path
-        Authenticator authenticator = new Authenticator("");
+        Authenticator authenticator = new Authenticator(System.getenv("HOME")+"/.hole_punch/users");
         try {
             ServerSocket serverSocket = new ServerSocket(portNum);
             System.out.println(String.format("Punch Server Listening on port: %d", portNum));

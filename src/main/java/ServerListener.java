@@ -25,7 +25,7 @@ public class ServerListener implements Runnable{
         StringBuilder nonceBuilder = new StringBuilder();
         Random rand = new Random();
         for (int i=0 ; i< NONCE_LENGTH ; i++) {
-            int idx = (int)rand.nextFloat()*nonceCharset.length();
+            int idx = (int)(rand.nextFloat()*nonceCharset.length());
             nonceBuilder.append(nonceCharset.charAt(idx));
         }
         return nonceBuilder.toString();

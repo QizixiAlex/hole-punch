@@ -3,7 +3,7 @@ public class ConnectionInfo {
     public int inTraffic;
     public int outTraffic;
     public int outPortNum;
-    public int pcPortNum; // need to be set later
+    public int pcPortNum;   // need to be set later
     public String clientIP; // need to be set later
     public String userName;
     public boolean open;
