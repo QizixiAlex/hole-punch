@@ -1,5 +1,7 @@
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 public class UnidirPCPipe implements Runnable {
@@ -16,15 +18,13 @@ public class UnidirPCPipe implements Runnable {
     @Override
     public void run() {
         try {
-            InputStream in = fromSocket.getInputStream();
-            OutputStream out = toSocket.getOutputStream();
-            byte[] buf = new byte[BUF_SIZE];
+            InputStreamReader in = new InputStreamReader(fromSocket.getInputStream());
+            OutputStreamWriter out = new OutputStreamWriter(toSocket.getOutputStream());
+            char[] buf = new char[BUF_SIZE];
             int bytes = 0;
-            while (true) {
-                while (in.available() != 0) {
-                    bytes = in.read(buf);
-                    out.write(buf, 0, bytes);
-                }
+            while ((bytes = in.read(buf, 0, BUF_SIZE)) > 0) {
+                out.write(buf, 0, bytes);
+                out.flush();
             }
         } catch (Exception ignored) {}
     }

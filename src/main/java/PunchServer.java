@@ -55,7 +55,7 @@ public class PunchServer {
             System.out.println(String.format("Punch Server Listening on port: %d", portNum));
             //monitor traffic
             Timer timer = new Timer();
-            timer.schedule(new ThroughPutMonitor(connectionInfoList,10), 0, 10000);
+            timer.schedule(new ThroughPutMonitor(connectionInfoList,10), 100000, 10000);
             while (true) {
                 Socket controlSocket = serverSocket.accept();
                 //read pc request
@@ -82,9 +82,7 @@ public class PunchServer {
                     PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
                     controlWriter.println(String.format("CONNECTED %d", listenPort));
                     //setup connection info
-                    ConnectionInfo currentConnectionInfo = new ConnectionInfo(userName, listenPort);
-                    connectionInfoList.add(currentConnectionInfo);
-                    ServerListener listener = new ServerListener(listenPort, currentConnectionInfo, controlWriter);
+                    ServerListener listener = new ServerListener(listenPort, connectionInfoList, controlWriter, userName);
                     Thread listenerThread = new Thread(listener);
                     listenerThread.setDaemon(true);
                     listenerThread.start();

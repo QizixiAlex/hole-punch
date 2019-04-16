@@ -1,6 +1,4 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class UnidirPSPipe implements Runnable {
@@ -21,30 +19,27 @@ public class UnidirPSPipe implements Runnable {
 
     @Override
     public void run() {
-        InputStream in = null;
-        OutputStream out = null;
+        InputStreamReader in = null;
+        OutputStreamWriter out = null;
         try {
             if (direction.equals("OUT")) {
-                in = pcSocket.getInputStream();
-                out = outSocket.getOutputStream();
+                in = new InputStreamReader(pcSocket.getInputStream());
+                out = new OutputStreamWriter(outSocket.getOutputStream());
             } else {
-                in = outSocket.getInputStream();
-                out = pcSocket.getOutputStream();
+                in = new InputStreamReader(outSocket.getInputStream());
+                out = new OutputStreamWriter(pcSocket.getOutputStream());
             }
         } catch (IOException ignored){}
-        byte[] buf = new byte[BUF_SIZE];
+        char[] buf = new char[BUF_SIZE];
         int bytesCount = 0;
         try {
-              while (true) {
-                  while (in.available() != 0) {
-                      bytesCount = in.read(buf);
-                      out.write(buf, 0, bytesCount);
-                      out.flush();
-                      if (direction.equals("OUT")) {
-                          info.outTraffic += bytesCount;
-                      } else {
-                          info.inTraffic += bytesCount;
-                      }
+              while ((bytesCount = in.read(buf, 0, BUF_SIZE)) > 0) {
+                  out.write(buf, 0, bytesCount);
+                  out.flush();
+                  if (direction.equals("OUT")) {
+                      info.outTraffic += bytesCount;
+                  } else {
+                      info.inTraffic += bytesCount;
                   }
               }
         } catch (Exception ignored){

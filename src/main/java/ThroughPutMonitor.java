@@ -12,6 +12,7 @@ public class ThroughPutMonitor extends TimerTask {
         this.serverStatus = serverStatus;
         prevInput = 0;
         prevOutput = 0;
+        this.seconds = seconds;
     }
 
     @Override
@@ -24,9 +25,11 @@ public class ThroughPutMonitor extends TimerTask {
         }
         double inputData = currentInput - prevInput;
         double outputData = currentOutput - prevOutput;
-        inputData = inputData / (1024*1024*seconds); //MB per second
-        outputData = outputData / (1024*1024*seconds); //MB per second
-        System.out.println(String.format("input throughput: %.2f output throughput: %.2f", inputData, outputData));
+        prevInput += inputData;
+        prevOutput += outputData;
+        inputData = inputData*8 / (1024*1024*seconds); //MBit per second
+        outputData = outputData*8 / (1024*1024*seconds); //MBit per second
+        System.out.println(String.format("input throughput: %.4f mega bits output throughput: %.4f mega bits", inputData, outputData));
     }
 
 }
