@@ -44,10 +44,6 @@ public class ServerListener implements Runnable{
             BufferedReader pcReader = new BufferedReader(new InputStreamReader(pcSocket.getInputStream()));
             String pcNonce = pcReader.readLine();
             if (!nonce.equals(pcNonce)) {
-                //close pcSocket
-                System.out.println("nonce no match");
-                System.out.println(nonce);
-                System.out.println(pcNonce);
                 pcSocket.close();
                 throw new Exception("nonce no match");
             }
@@ -55,7 +51,6 @@ public class ServerListener implements Runnable{
             info.clientIP = pcSocket.getRemoteSocketAddress().toString();
             while (true) {
                 Socket outSocket = outServerSocket.accept();
-                System.out.println("out connection received");
                 UnidirPSPipe leftPipe = new UnidirPSPipe(outSocket, pcSocket, info, "OUT");
                 //leftPipe.run();
                 Thread leftThread = new Thread(leftPipe);
@@ -66,7 +61,6 @@ public class ServerListener implements Runnable{
                 Thread rightThread = new Thread(rightPipe);
                 rightThread.setDaemon(true);
                 rightThread.start();
-                System.out.println("ps pipe running");
             }
         } catch (Exception ignored) {
             //do nothing, close sockets in finally

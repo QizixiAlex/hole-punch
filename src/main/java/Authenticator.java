@@ -52,4 +52,17 @@ public class Authenticator {
         }
         return false;
     }
+
+    public boolean authenticate(String userName, String password) {
+        for (UserInfo info : userInfoList) {
+            if (userName.equals(info.userName)) {
+                //check password hash
+                String hashPassword = security.hashPassword(password, info.salt)[0];
+                if (hashPassword.equals(info.hashedPassword)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

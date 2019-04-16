@@ -1,7 +1,9 @@
+import java.math.BigInteger;
+
 public class ConnectionInfo {
 
-    public int inTraffic;
-    public int outTraffic;
+    public double inTraffic;
+    public double outTraffic;
     public int outPortNum;
     public int pcPortNum;   // need to be set later
     public String clientIP; // need to be set later
@@ -16,8 +18,7 @@ public class ConnectionInfo {
         this.outPortNum = outPortNum;
     }
 
-    public void display() {
-        System.out.println(String.format("%s %d %d %s IN:%d Bytes OUT:%d Bytes",
-                userName, outPortNum, pcPortNum, clientIP, inTraffic, outTraffic));
+    public String display() {
+        return String.format("%s %d %d %s IN:%d Bytes OUT:%d Bytes", userName, outPortNum, pcPortNum, clientIP, (long)inTraffic, (long)outTraffic);
     }
 }

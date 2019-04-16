@@ -38,7 +38,6 @@ public class UnidirPSPipe implements Runnable {
               while (true) {
                   while (in.available() != 0) {
                       bytesCount = in.read(buf);
-                      System.out.println(bytesCount);
                       out.write(buf, 0, bytesCount);
                       out.flush();
                       if (direction.equals("OUT")) {

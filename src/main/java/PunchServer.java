@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 public class PunchServer {
 
@@ -17,18 +18,50 @@ public class PunchServer {
         connectionInfoList = new ArrayList<>();
     }
 
+    // security feature: ensure request is not malformed
+    private boolean validRequest(String request) {
+        if (request.startsWith("OPEN")) {
+            String[] openTokens = request.split("\\s+");
+            //check argument
+            if (openTokens.length != 4) {
+                return false;
+            }
+            //check portnumber
+            try {
+                int portNum = Integer.parseInt(openTokens[3]);
+                if (portNum < 0 || portNum >= 65536) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            return true;
+        } else if (request.startsWith("LIST")) {
+            String[] listTokens = request.split("\\s+");
+            if (listTokens.length != 3) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void run() {
         //create socket to listen for client requests
         Authenticator authenticator = new Authenticator(System.getenv("HOME")+"/.hole_punch/users");
         try {
             ServerSocket serverSocket = new ServerSocket(portNum);
             System.out.println(String.format("Punch Server Listening on port: %d", portNum));
+            //monitor traffic
+            Timer timer = new Timer();
+            timer.schedule(new ThroughPutMonitor(connectionInfoList,10), 0, 10000);
             while (true) {
                 Socket controlSocket = serverSocket.accept();
                 //read pc request
                 BufferedReader controlReader = new BufferedReader(new InputStreamReader(controlSocket.getInputStream()));
                 String pcRequest = controlReader.readLine();
-                if (pcRequest == null || pcRequest.length() == 0) {
+                if (pcRequest == null || pcRequest.length() == 0 || !validRequest(pcRequest)) {
                     continue;
                 }
                 String[] tokens = pcRequest.split("\\s+");
@@ -56,9 +89,19 @@ public class PunchServer {
                     listenerThread.setDaemon(true);
                     listenerThread.start();
                 } else if (requestType.equals("LIST")){
+                    String userName = tokens[1];
+                    String password = tokens[2];
+                    if (!authenticator.authenticate(userName, password)) {
+                        //authentication failure, send delayed response to pc
+                        Thread delayResponseThread = new Thread(new DelayResponse(controlSocket, 30));
+                        delayResponseThread.start();
+                        continue;
+                    }
+                    PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
+                    controlWriter.println(String.format("CONNECTIONINFO %d", connectionInfoList.size()));
                     for (ConnectionInfo info : connectionInfoList) {
                         if (info.open) {
-                            info.display();
+                            controlWriter.println(info.display());
                         }
                     }
                 }
