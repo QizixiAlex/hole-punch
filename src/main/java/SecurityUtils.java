@@ -4,6 +4,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
+/**
+ * Securely store user password with SHA-256 algorithm and add salt
+ * **/
 public class SecurityUtils {
 
     private MessageDigest sha256;

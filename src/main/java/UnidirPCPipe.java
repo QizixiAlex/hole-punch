@@ -4,6 +4,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+/**
+ * Worker thread for connecting two sockets unidirectionally on Punch Client Side
+ * **/
 public class UnidirPCPipe implements Runnable {
 
     private Socket fromSocket;

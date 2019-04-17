@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/** Send faliure respond to Punch Client with delay **/
 public class DelayResponse implements Runnable {
 
     private Socket controlSocket;
@@ -12,6 +13,7 @@ public class DelayResponse implements Runnable {
         this.delaySecs = delaySecs;
     }
 
+    //wait for specified time period, then send failure information
     @Override
     public void run() {
         try {

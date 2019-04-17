@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * Punch Config Program as decribed in Homework Doc
+ * **/
 public class PunchConfig {
 
     private static final String userFileName = System.getenv("HOME") + "/.hole_punch/users";
@@ -13,6 +16,7 @@ public class PunchConfig {
         this.security = new SecurityUtils();
     }
 
+    // Prompt user input and add to file
     public boolean addConfig() throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter username:");

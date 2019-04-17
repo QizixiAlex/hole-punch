@@ -1,6 +1,10 @@
 import java.util.List;
 import java.util.TimerTask;
 
+
+/**
+ * Throughput Monitor for Punch Server
+ * **/
 public class ThroughPutMonitor extends TimerTask {
 
     private List<ConnectionInfo> serverStatus;

@@ -1,5 +1,6 @@
-import java.math.BigInteger;
-
+/**
+ Store Information about each pair of socket connection on punch server side
+* */
 public class ConnectionInfo {
 
     public double inTraffic;
@@ -18,6 +19,7 @@ public class ConnectionInfo {
         this.outPortNum = outPortNum;
     }
 
+    // return connection information for the List command
     public String display() {
         return String.format("%s %d %d %s IN:%d Bytes OUT:%d Bytes", userName, outPortNum, pcPortNum, clientIP, (long)inTraffic, (long)outTraffic);
     }

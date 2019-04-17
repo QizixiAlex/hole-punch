@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ Authenticator for Punch Server List & Connect Commands
+* */
 public class Authenticator {
 
     private List<UserInfo> userInfoList;
@@ -30,6 +33,7 @@ public class Authenticator {
                     case 3:
                         info.salt = line;
                         userInfoList.add(info);
+                        info = new UserInfo();
                         break;
                 }
                 counter++;
@@ -40,6 +44,7 @@ public class Authenticator {
         }
     }
 
+    //authenticate connect command
     public boolean authenticate(String userName, String password, int portNum) {
         for (UserInfo info : userInfoList) {
             if (userName.equals(info.userName) && portNum == info.portNum) {
@@ -53,6 +58,7 @@ public class Authenticator {
         return false;
     }
 
+    //authenticate list command
     public boolean authenticate(String userName, String password) {
         for (UserInfo info : userInfoList) {
             if (userName.equals(info.userName)) {

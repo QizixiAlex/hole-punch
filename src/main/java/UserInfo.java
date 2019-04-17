@@ -1,3 +1,6 @@
+/**
+ * Store user information
+ * **/
 public class UserInfo {
 
     public String userName;

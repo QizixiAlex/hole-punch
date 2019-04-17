@@ -1,6 +1,9 @@
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Worker thread for connecting two sockets unidirectionally on the Punch Server side
+ * **/
 public class UnidirPSPipe implements Runnable {
 
     private Socket outSocket;
