@@ -1,7 +1,4 @@
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -30,5 +27,13 @@ public class UnidirPCPipe implements Runnable {
                 out.flush();
             }
         } catch (Exception ignored) {}
+        finally {
+            try {
+                fromSocket.close();
+            } catch (IOException ignored) {}
+            try {
+                toSocket.close();
+            } catch (IOException ignored) {}
+        }
     }
 }

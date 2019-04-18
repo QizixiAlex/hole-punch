@@ -47,6 +47,14 @@ public class UnidirPSPipe implements Runnable {
               }
         } catch (Exception ignored){
             //ignore
+        } finally {
+            info.open = false;
+            try {
+                pcSocket.close();
+            } catch (IOException ignored) {}
+            try {
+                outSocket.close();
+            } catch (IOException ignored) {}
         }
     }
 }

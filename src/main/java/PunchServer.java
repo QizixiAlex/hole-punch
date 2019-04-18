@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -51,6 +48,17 @@ public class PunchServer {
     }
 
     public void run() {
+        //check users file first
+        File userFileDirectory = new File(System.getenv("HOME")+"/.hole_punch");
+        File userFile = new File(System.getenv("HOME")+"/.hole_punch/users");
+        if (!userFileDirectory.exists()||!userFileDirectory.canRead()||!userFileDirectory.canWrite()||!userFileDirectory.canExecute()) {
+            System.out.println("users file permission error");
+            return;
+        }
+        if (!userFile.exists()||!userFile.canRead()||!userFile.canWrite()||!userFile.canExecute()) {
+            System.out.println("users file permission error");
+            return;
+        }
         //create socket to listen for client requests
         Authenticator authenticator = new Authenticator(System.getenv("HOME")+"/.hole_punch/users");
         try {
@@ -99,7 +107,7 @@ public class PunchServer {
                         continue;
                     }
                     PrintWriter controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
-                    controlWriter.println(String.format("CONNECTIONINFO %d", connectionInfoList.size()));
+                    controlWriter.println(String.format("CONNECTION INFO:", connectionInfoList.size()));
                     for (ConnectionInfo info : connectionInfoList) {
                         if (info.open) {
                             controlWriter.println(info.display());

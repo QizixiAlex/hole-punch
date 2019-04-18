@@ -77,7 +77,7 @@ public class ServerListener implements Runnable{
             //do nothing, close sockets in finally
         } finally {
             for (ConnectionInfo info : selfInfoList) {
-                info.open = true;
+                info.open = false;
             }
             //close out socket
             if (outServerSocket != null) {
