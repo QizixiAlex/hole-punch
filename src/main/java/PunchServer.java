@@ -105,6 +105,7 @@ public class PunchServer {
                             controlWriter.println(info.display());
                         }
                     }
+                    controlSocket.close();
                 }
             }
         } catch (IOException e) {

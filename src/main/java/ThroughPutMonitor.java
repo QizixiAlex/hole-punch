@@ -31,9 +31,9 @@ public class ThroughPutMonitor extends TimerTask {
         double outputData = currentOutput - prevOutput;
         prevInput += inputData;
         prevOutput += outputData;
-        inputData = inputData*8 / (1024*1024*seconds); //MBit per second
-        outputData = outputData*8 / (1024*1024*seconds); //MBit per second
-        System.out.println(String.format("input throughput: %.4f mega bits output throughput: %.4f mega bits", inputData, outputData));
+        inputData = inputData*8 / (1000*1000*seconds); //MBit per second
+        outputData = outputData*8 / (1000*1000*seconds); //MBit per second
+        System.out.println(String.format("input throughput: %.4f Megabits output throughput: %.4f Megabits", inputData, outputData));
     }
 
 }
